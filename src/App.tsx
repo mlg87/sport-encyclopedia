@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { CHAMPIONS } from './data';
 import { computeRunningCupCounts } from './utils/computeCups';
-import { buildDecadeViews, getWinningTeams, type SortDirection } from './utils/viewModel';
+import { buildDecadeViews, getWinningFranchises, type SortDirection } from './utils/viewModel';
 import { ChampionRow } from './components/ChampionRow';
 import { DecadeGroup } from './components/DecadeGroup';
 import { DecadeChips } from './components/nav/DecadeChips';
@@ -21,21 +21,39 @@ export default function App() {
     return map;
   }, []);
 
-  const allTeams = useMemo(() => getWinningTeams(CHAMPIONS), []);
+  const franchises = useMemo(() => getWinningFranchises(CHAMPIONS), []);
+  const franchiseLabelById = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const f of franchises) m.set(f.id, f.label);
+    return m;
+  }, [franchises]);
 
   // Default to newest-first — most recent champion is usually the point
   // of entry for casual readers.
   const [sort, setSort] = useState<SortDirection>('desc');
-  const [selectedTeams, setSelectedTeams] = useState<ReadonlySet<string>>(() => new Set());
+  const [selectedFranchiseIds, setSelectedFranchiseIds] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
 
   const decadeViews = useMemo(
-    () => buildDecadeViews(CHAMPIONS, selectedTeams, sort),
-    [selectedTeams, sort],
+    () => buildDecadeViews(CHAMPIONS, selectedFranchiseIds, sort),
+    [selectedFranchiseIds, sort],
   );
   const decadeNumbers = useMemo(() => decadeViews.map((v) => v.decade), [decadeViews]);
 
-  const hasFilter = selectedTeams.size > 0;
+  const hasFilter = selectedFranchiseIds.size > 0;
   const matchCount = decadeViews.reduce((n, v) => n + v.entries.length, 0);
+  const nonEmptyDecadeCount = decadeViews.filter((v) => !v.empty).length;
+
+  // Empty-state message needs a readable team name, not a franchise id. For
+  // a single selected franchise show its canonical label; otherwise fall
+  // back to "the selected teams".
+  const emptyMessage = (() => {
+    if (selectedFranchiseIds.size !== 1) return 'No wins this decade for the selected teams.';
+    const onlyId = selectedFranchiseIds.values().next().value as string;
+    const label = franchiseLabelById.get(onlyId) ?? 'selected team';
+    return `No wins this decade for ${label}.`;
+  })();
 
   return (
     <div className="page">
@@ -54,20 +72,20 @@ export default function App() {
       <Toolbar
         sort={sort}
         onSortChange={setSort}
-        allTeams={allTeams}
-        selectedTeams={selectedTeams}
-        onSelectedTeamsChange={setSelectedTeams}
+        franchises={franchises}
+        selectedFranchiseIds={selectedFranchiseIds}
+        onSelectedFranchiseIdsChange={setSelectedFranchiseIds}
       />
 
       {hasFilter && (
         <p className="filter-summary" aria-live="polite">
           {matchCount === 0
-            ? `No matches for the selected team${selectedTeams.size === 1 ? '' : 's'}.`
-            : `${matchCount} match${matchCount === 1 ? '' : 'es'} across ${decadeViews.filter((v) => !v.empty).length} decade${decadeViews.filter((v) => !v.empty).length === 1 ? '' : 's'}.`}
+            ? `No matches for the selected team${selectedFranchiseIds.size === 1 ? '' : 's'}.`
+            : `${matchCount} match${matchCount === 1 ? '' : 'es'} across ${nonEmptyDecadeCount} decade${nonEmptyDecadeCount === 1 ? '' : 's'}.`}
           <button
             type="button"
             className="filter-summary__reset"
-            onClick={() => setSelectedTeams(new Set())}
+            onClick={() => setSelectedFranchiseIds(new Set())}
           >
             Clear filter
           </button>
@@ -80,11 +98,7 @@ export default function App() {
             key={view.decade}
             decade={view.decade}
             empty={view.empty}
-            emptyMessage={
-              selectedTeams.size === 1
-                ? `No wins this decade for ${Array.from(selectedTeams)[0]}.`
-                : 'No wins this decade for the selected teams.'
-            }
+            emptyMessage={emptyMessage}
           >
             {view.entries.map((champion, i) => (
               <ChampionRow

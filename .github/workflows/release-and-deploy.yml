@@ -1,0 +1,82 @@
+name: Release and Deploy
+
+on:
+  push:
+    branches: [main]
+
+# Only one release run at a time. If a second push lands during a release
+# we let it queue rather than cancelling — cancelling mid-release can leave
+# tags out of sync with CHANGELOG.md.
+concurrency:
+  group: release-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    # semantic-release needs to commit CHANGELOG + package.json bump back
+    # to main, create tags, and create GitHub releases.
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      new_release_published: ${{ steps.release.outputs.new_release_published }}
+      new_release_version: ${{ steps.release.outputs.new_release_version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history is required for commit-analyzer to derive the next
+          # version correctly; a shallow clone misreads recent commits.
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Run semantic-release
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: release
+    # Deploy only when release completed successfully (may or may not have
+    # cut a new version). If release failed, skip — we don't want a broken
+    # state on Pages.
+    if: needs.release.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Check out `main` fresh so we pick up the version bump + CHANGELOG
+          # commit that semantic-release just pushed back. Using default
+          # (triggering SHA) would deploy the pre-release tree.
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

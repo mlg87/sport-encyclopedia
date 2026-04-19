@@ -1,0 +1,129 @@
+name: PR
+
+on:
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for the same PR when new commits land so the
+# branch protection "ci-gate" check always reflects the latest HEAD.
+concurrency:
+  group: pr-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  format:
+    name: Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+
+  # Full unit + integration test suite. Coverage thresholds (defined in
+  # vite.config.ts) are enforced here — this job fails if thresholds aren't met.
+  test:
+    name: Unit tests + coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+          retention-days: 7
+
+  # Dedicated a11y job for at-a-glance PR feedback — runs only tests whose
+  # name matches /accessibility|a11y/. Same axe suite as the main test run;
+  # surfacing separately makes regressions obvious without digging into logs.
+  a11y:
+    name: Accessibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run test:a11y
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  # Single required status check for branch protection. This is the only job
+  # that should be marked "Required" in Settings → Branches → main. Everything
+  # upstream must succeed for this job to succeed.
+  ci-gate:
+    name: CI Gate
+    if: always()
+    needs: [lint, format, test, a11y, build]
+    runs-on: ubuntu-latest
+    # Pass each upstream job's status through the env to avoid any injection
+    # surface (defense in depth — job results are runner-controlled, not user
+    # input, but inlining them in run: via ${{ }} is a pattern worth avoiding).
+    env:
+      LINT_RESULT: ${{ needs.lint.result }}
+      FORMAT_RESULT: ${{ needs.format.result }}
+      TEST_RESULT: ${{ needs.test.result }}
+      A11Y_RESULT: ${{ needs.a11y.result }}
+      BUILD_RESULT: ${{ needs.build.result }}
+    steps:
+      - name: Verify all upstream jobs passed
+        run: |
+          failed=0
+          check() {
+            local name="$1"
+            local status="$2"
+            if [ "$status" != "success" ]; then
+              echo "::error::$name failed with status '$status'"
+              failed=1
+            else
+              echo "$name: $status"
+            fi
+          }
+          check "lint"   "$LINT_RESULT"
+          check "format" "$FORMAT_RESULT"
+          check "test"   "$TEST_RESULT"
+          check "a11y"   "$A11Y_RESULT"
+          check "build"  "$BUILD_RESULT"
+          if [ $failed -ne 0 ]; then
+            echo "One or more required jobs did not succeed."
+            exit 1
+          fi
+          echo "All required jobs succeeded."

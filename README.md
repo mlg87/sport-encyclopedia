@@ -24,31 +24,32 @@ npm run dev
 ## Commits, releases, and deploys
 
 This repo uses conventional commits to drive automated semantic-versioned
-releases. The footer of the site links to `CHANGELOG.md` at the version
-currently deployed.
+releases. The footer of the site links to the repo's **Releases** page,
+where semantic-release publishes per-version notes.
 
 **Committing.** A Husky `commit-msg` hook runs commitlint on every message,
 so non-conventional commits are rejected locally. Use `npm run commit` to get
 the interactive Commitizen prompt if you want help structuring one.
 
-**Releases.** On every merge to `main`, `.github/workflows/release-and-deploy.yml`
-runs `semantic-release`, which:
+**Releases + deploy.** On every merge to `main`,
+`.github/workflows/release-and-deploy.yml` runs one combined job that:
 
-1. Analyzes commits since the last tag
-2. Computes the next semver version (`feat:` → minor, `fix:` → patch, `!:` →
-   major)
-3. Writes release notes into `CHANGELOG.md`
-4. Bumps `package.json` version
-5. Commits those changes back to `main` with `[skip ci]`
-6. Tags the commit and creates a GitHub Release
+1. Runs `semantic-release`, which:
+   - Analyzes commits since the last tag
+   - Computes the next semver version (`feat:` → minor, `fix:` → patch, `!:` →
+     major)
+   - Bumps `package.json` **in the runner only** (it's never committed back —
+     `main` is branch-protected and semantic-release isn't a bypass actor)
+   - Creates the git tag and publishes release notes to **GitHub Releases**
+2. Runs `npm run build`, which reads the now-bumped `package.json` and
+   injects `__APP_VERSION__` into the bundle via `vite.config.ts` `define`
+3. Uploads `dist/` and publishes to GitHub Pages via `actions/deploy-pages`
 
-The site version visible in the footer comes from `package.json` at build time
-(injected by `vite.config.ts` into `__APP_VERSION__`).
+Because release and deploy share one job, the in-memory version bump flows
+straight into the deployed artifact without a round-trip through `main`.
 
-**Deploys.** After `release` succeeds, the `deploy` job checks out the bumped
-`main`, builds, and publishes to GitHub Pages via `actions/deploy-pages`. There
-is also a manual fallback: `npm run deploy` pushes `dist/` to the `gh-pages`
-branch using the `gh-pages` package.
+There's also a manual fallback: `npm run deploy` pushes `dist/` to the
+`gh-pages` branch using the `gh-pages` package.
 
 ### One-time GitHub setup
 

@@ -1,38 +1,41 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { CHAMPIONS } from './data';
 import { computeRunningCupCounts } from './utils/computeCups';
+import { buildDecadeViews, getWinningTeams, type SortDirection } from './utils/viewModel';
 import { ChampionRow } from './components/ChampionRow';
 import { DecadeGroup } from './components/DecadeGroup';
 import { DecadeChips } from './components/nav/DecadeChips';
+import { Toolbar } from './components/toolbar/Toolbar';
 import './components/nav/nav.css';
-
-type Decade = {
-  decade: number;
-  entries: { index: number }[];
-};
-
-// Bucket champions into decade groups. We keep the original index alongside
-// each entry so ChampionRow can look up its precomputed running-cup count
-// (computeRunningCupCounts returns a parallel array).
-function groupByDecade(count: number): Decade[] {
-  const groups = new Map<number, Decade>();
-  for (let i = 0; i < count; i++) {
-    const year = CHAMPIONS[i].year;
-    const decade = Math.floor(year / 10) * 10;
-    let group = groups.get(decade);
-    if (!group) {
-      group = { decade, entries: [] };
-      groups.set(decade, group);
-    }
-    group.entries.push({ index: i });
-  }
-  return Array.from(groups.values()).sort((a, b) => a.decade - b.decade);
-}
+import './components/toolbar/toolbar.css';
 
 export default function App() {
-  const runningCounts = useMemo(() => computeRunningCupCounts(CHAMPIONS), []);
-  const decades = useMemo(() => groupByDecade(CHAMPIONS.length), []);
-  const decadeNumbers = useMemo(() => decades.map((d) => d.decade), [decades]);
+  // Cup counts are always computed chronologically off the full dataset —
+  // a team's cup count at the time of their win is a historical fact and
+  // shouldn't change with sort direction or filter selection. We key by
+  // year (unique) so the lookup survives any decade reordering.
+  const cupCountByYear = useMemo(() => {
+    const counts = computeRunningCupCounts(CHAMPIONS);
+    const map = new Map<number, number>();
+    CHAMPIONS.forEach((c, i) => map.set(c.year, counts[i]));
+    return map;
+  }, []);
+
+  const allTeams = useMemo(() => getWinningTeams(CHAMPIONS), []);
+
+  // Default to newest-first — most recent champion is usually the point
+  // of entry for casual readers.
+  const [sort, setSort] = useState<SortDirection>('desc');
+  const [selectedTeams, setSelectedTeams] = useState<ReadonlySet<string>>(() => new Set());
+
+  const decadeViews = useMemo(
+    () => buildDecadeViews(CHAMPIONS, selectedTeams, sort),
+    [selectedTeams, sort],
+  );
+  const decadeNumbers = useMemo(() => decadeViews.map((v) => v.decade), [decadeViews]);
+
+  const hasFilter = selectedTeams.size > 0;
+  const matchCount = decadeViews.reduce((n, v) => n + v.entries.length, 0);
 
   return (
     <div className="page">
@@ -48,15 +51,47 @@ export default function App() {
         </p>
       </header>
 
+      <Toolbar
+        sort={sort}
+        onSortChange={setSort}
+        allTeams={allTeams}
+        selectedTeams={selectedTeams}
+        onSelectedTeamsChange={setSelectedTeams}
+      />
+
+      {hasFilter && (
+        <p className="filter-summary" aria-live="polite">
+          {matchCount === 0
+            ? `No matches for the selected team${selectedTeams.size === 1 ? '' : 's'}.`
+            : `${matchCount} match${matchCount === 1 ? '' : 'es'} across ${decadeViews.filter((v) => !v.empty).length} decade${decadeViews.filter((v) => !v.empty).length === 1 ? '' : 's'}.`}
+          <button
+            type="button"
+            className="filter-summary__reset"
+            onClick={() => setSelectedTeams(new Set())}
+          >
+            Clear filter
+          </button>
+        </p>
+      )}
+
       <main className="ledger">
-        {decades.map((group) => (
-          <DecadeGroup key={group.decade} decade={group.decade}>
-            {group.entries.map(({ index }) => (
+        {decadeViews.map((view) => (
+          <DecadeGroup
+            key={view.decade}
+            decade={view.decade}
+            empty={view.empty}
+            emptyMessage={
+              selectedTeams.size === 1
+                ? `No wins this decade for ${Array.from(selectedTeams)[0]}.`
+                : 'No wins this decade for the selected teams.'
+            }
+          >
+            {view.entries.map((champion, i) => (
               <ChampionRow
-                key={CHAMPIONS[index].year}
-                champion={CHAMPIONS[index]}
-                cupCount={runningCounts[index]}
-                index={index}
+                key={champion.year}
+                champion={champion}
+                cupCount={cupCountByYear.get(champion.year) ?? 0}
+                index={i}
               />
             ))}
           </DecadeGroup>

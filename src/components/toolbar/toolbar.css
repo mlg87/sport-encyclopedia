@@ -1,0 +1,209 @@
+/* Toolbar sits between the masthead and the ledger. Horizontal on mobile
+   (fits comfortably since we only have two controls) and stays inline on
+   desktop. The sticky decade chips scroll underneath it, not over it. */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 28px;
+  padding: 12px 0;
+  border-top: 1px solid var(--rule-soft);
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.toolbar__sort,
+.toolbar__filter-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 6px 10px;
+  font-family: var(--body-font);
+  font-size: 0.82rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+
+.toolbar__sort:hover,
+.toolbar__filter-summary:hover {
+  border-color: var(--ink-muted);
+}
+
+.toolbar__sort:focus-visible,
+.toolbar__filter-summary:focus-visible {
+  outline: 2px solid var(--ink-muted);
+  outline-offset: 2px;
+}
+
+.toolbar__sort-label,
+.toolbar__filter-label {
+  font-family: var(--mono-font);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.toolbar__sort-value,
+.toolbar__filter-value {
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.toolbar__sort-icon,
+.toolbar__filter-caret {
+  color: var(--ink-muted);
+  transition: transform 140ms ease;
+}
+
+/* --- filter dropdown --- */
+.toolbar__filter {
+  position: relative;
+}
+
+.toolbar__filter-summary {
+  list-style: none;
+  user-select: none;
+}
+
+/* Strip native <details>/summary disclosure triangle; our own caret replaces it. */
+.toolbar__filter-summary::-webkit-details-marker {
+  display: none;
+}
+
+.toolbar__filter[open] .toolbar__filter-caret {
+  transform: rotate(180deg);
+}
+
+.toolbar__filter[open] .toolbar__filter-summary {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.toolbar__filter[open] .toolbar__filter-label,
+.toolbar__filter[open] .toolbar__filter-caret {
+  color: var(--rule-soft);
+}
+
+.toolbar__filter-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 35;
+  width: min(320px, calc(100vw - 40px));
+  max-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.toolbar__filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  font-family: var(--mono-font);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.toolbar__filter-clear {
+  background: transparent;
+  border: 0;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 2px 4px;
+  letter-spacing: 0.08em;
+}
+
+.toolbar__filter-clear:disabled {
+  color: var(--ink-faint);
+  cursor: not-allowed;
+}
+
+.toolbar__filter-clear:hover:not(:disabled) {
+  color: var(--ink-muted);
+}
+
+.toolbar__filter-list {
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.toolbar__filter-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.toolbar__filter-option:hover {
+  background: var(--rule-soft);
+}
+
+.toolbar__filter-option input[type='checkbox'] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--ink);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* --- empty-decade state (filter active, no matches) --- */
+.decade--empty {
+  opacity: 0.75;
+}
+
+.decade__empty {
+  padding: 10px 0 18px;
+  color: var(--ink-faint);
+  font-size: 0.86rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* --- filter summary / result count --- */
+.filter-summary {
+  margin: 0 0 20px;
+  font-family: var(--mono-font);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.filter-summary__reset {
+  background: transparent;
+  border: 0;
+  padding: 0 0 0 6px;
+  color: var(--ink);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.filter-summary__reset:hover {
+  color: var(--ink-muted);
+}

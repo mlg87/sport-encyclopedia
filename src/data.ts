@@ -389,7 +389,7 @@ export const CHAMPIONS: Champion[] = [
   {
     year: 1934,
     noChampion: false,
-    name: 'Chicago Black Hawks',
+    name: 'Chicago Blackhawks',
     abbr: 'CHI',
     espnAbbr: 'chi',
     color: '#CF0A2C',
@@ -425,7 +425,7 @@ export const CHAMPIONS: Champion[] = [
   {
     year: 1938,
     noChampion: false,
-    name: 'Chicago Black Hawks',
+    name: 'Chicago Blackhawks',
     abbr: 'CHI',
     espnAbbr: 'chi',
     color: '#CF0A2C',
@@ -632,7 +632,7 @@ export const CHAMPIONS: Champion[] = [
   {
     year: 1961,
     noChampion: false,
-    name: 'Chicago Black Hawks',
+    name: 'Chicago Blackhawks',
     abbr: 'CHI',
     espnAbbr: 'chi',
     color: '#CF0A2C',

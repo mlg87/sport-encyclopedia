@@ -3,6 +3,8 @@ import { CHAMPIONS } from './data';
 import { computeRunningCupCounts } from './utils/computeCups';
 import { ChampionRow } from './components/ChampionRow';
 import { DecadeGroup } from './components/DecadeGroup';
+import { DecadeChips } from './components/nav/DecadeChips';
+import './components/nav/nav.css';
 
 type Decade = {
   decade: number;
@@ -30,9 +32,12 @@ function groupByDecade(count: number): Decade[] {
 export default function App() {
   const runningCounts = useMemo(() => computeRunningCupCounts(CHAMPIONS), []);
   const decades = useMemo(() => groupByDecade(CHAMPIONS.length), []);
+  const decadeNumbers = useMemo(() => decades.map((d) => d.decade), [decades]);
 
   return (
     <div className="page">
+      <DecadeChips decades={decadeNumbers} />
+
       <header className="masthead">
         <p className="masthead__kicker">An illustrated ledger</p>
         <h1 className="masthead__title">Stanley Cup Champions</h1>

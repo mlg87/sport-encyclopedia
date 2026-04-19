@@ -13,6 +13,11 @@ concurrency:
 permissions:
   contents: read
 
+# Dev-time hooks (lint-staged, commitlint) should never run in CI. Disabling
+# keeps husky's `prepare` script a no-op during `npm ci` across every job.
+env:
+  HUSKY: '0'
+
 jobs:
   lint:
     name: Lint

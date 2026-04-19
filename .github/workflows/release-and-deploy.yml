@@ -14,6 +14,12 @@ concurrency:
 permissions:
   contents: read
 
+# Dev-time hooks (lint-staged, commitlint) should never run in CI. Without
+# this, semantic-release's programmatic `git commit` trips the commit-msg
+# hook against an auto-generated message and fails the release.
+env:
+  HUSKY: '0'
+
 jobs:
   release:
     name: Release

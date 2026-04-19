@@ -25,13 +25,15 @@ describe('App', () => {
     expect(screen.getByText(/No champion — lockout/)).toBeInTheDocument();
   });
 
-  it('renders a version link in the footer pointing at the changelog', () => {
+  it('renders a version link in the footer pointing at GitHub Releases', () => {
     render(<App />);
     // __APP_VERSION__ is injected by Vite's `define` in vite.config.ts.
     // In the Vitest environment the define pipeline also resolves it, so the
-    // link renders with a concrete version string.
+    // link renders with a concrete version string. The link points to the
+    // repo's Releases page — semantic-release publishes notes there instead
+    // of committing a CHANGELOG.md back to a protected main branch.
     const link = screen.getByRole('link', { name: /^v/ });
-    expect(link).toHaveAttribute('href', expect.stringContaining('CHANGELOG.md'));
+    expect(link).toHaveAttribute('href', expect.stringContaining('/releases'));
   });
 
   describe('accessibility', () => {

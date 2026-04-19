@@ -3,22 +3,27 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { Toolbar } from './Toolbar';
+import type { FranchiseOption } from '../../utils/viewModel';
 
-const ALL = ['Boston Bruins', 'Montreal Canadiens', 'Toronto Maple Leafs'];
+const FRANCHISES: FranchiseOption[] = [
+  { id: 'bruins', label: 'Boston Bruins' },
+  { id: 'canadiens', label: 'Montreal Canadiens' },
+  { id: 'toronto', label: 'Toronto Maple Leafs' },
+];
 
 function setup(initial?: { sort?: 'desc' | 'asc'; selected?: Set<string> }) {
   const onSortChange = vi.fn();
-  const onSelectedTeamsChange = vi.fn();
+  const onSelectedFranchiseIdsChange = vi.fn();
   const utils = render(
     <Toolbar
       sort={initial?.sort ?? 'desc'}
       onSortChange={onSortChange}
-      allTeams={ALL}
-      selectedTeams={initial?.selected ?? new Set()}
-      onSelectedTeamsChange={onSelectedTeamsChange}
+      franchises={FRANCHISES}
+      selectedFranchiseIds={initial?.selected ?? new Set()}
+      onSelectedFranchiseIdsChange={onSelectedFranchiseIdsChange}
     />,
   );
-  return { ...utils, onSortChange, onSelectedTeamsChange };
+  return { ...utils, onSortChange, onSelectedFranchiseIdsChange };
 }
 
 describe('Toolbar', () => {
@@ -48,25 +53,27 @@ describe('Toolbar', () => {
     });
 
     it('reads "N selected" with the current count', () => {
-      setup({ selected: new Set(['Boston Bruins', 'Montreal Canadiens']) });
+      setup({ selected: new Set(['bruins', 'canadiens']) });
       expect(screen.getByText('2 selected')).toBeInTheDocument();
     });
 
-    it('toggles a team on and off when its checkbox is clicked', async () => {
+    it('emits the franchise id (not the label) when a checkbox is toggled', async () => {
       const user = userEvent.setup();
-      const { onSelectedTeamsChange } = setup();
-      // Open the disclosure by clicking the summary.
+      const { onSelectedFranchiseIdsChange } = setup();
       await user.click(screen.getByText('All teams'));
+      // Check the label is shown, but the callback receives the id.
       await user.click(screen.getByRole('checkbox', { name: 'Boston Bruins' }));
-      expect(onSelectedTeamsChange).toHaveBeenCalledWith(new Set(['Boston Bruins']));
+      expect(onSelectedFranchiseIdsChange).toHaveBeenCalledWith(new Set(['bruins']));
     });
 
     it('clears all selections via the Clear button', async () => {
       const user = userEvent.setup();
-      const { onSelectedTeamsChange } = setup({ selected: new Set(ALL) });
+      const { onSelectedFranchiseIdsChange } = setup({
+        selected: new Set(FRANCHISES.map((f) => f.id)),
+      });
       await user.click(screen.getByText('3 selected'));
       await user.click(screen.getByRole('button', { name: 'Clear' }));
-      expect(onSelectedTeamsChange).toHaveBeenCalledWith(new Set());
+      expect(onSelectedFranchiseIdsChange).toHaveBeenCalledWith(new Set());
     });
   });
 

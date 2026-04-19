@@ -13,9 +13,21 @@ export interface DecadeView {
   empty: boolean;
 }
 
+/**
+ * One option in the team filter, keyed by franchise_id so that name changes
+ * across eras (Toronto Blueshirts → Arenas → St. Patricks → Maple Leafs)
+ * collapse into a single selectable entry. The label is the franchise's
+ * most recent display name — readers are most likely to search by the
+ * current/best-known name.
+ */
+export interface FranchiseOption {
+  id: string;
+  label: string;
+}
+
 export function buildDecadeViews(
   champions: Champion[],
-  selectedTeams: ReadonlySet<string>,
+  selectedFranchiseIds: ReadonlySet<string>,
   sort: SortDirection,
 ): DecadeView[] {
   const groups = new Map<number, Champion[]>();
@@ -29,17 +41,19 @@ export function buildDecadeViews(
     }
   }
 
-  const hasFilter = selectedTeams.size > 0;
+  const hasFilter = selectedFranchiseIds.size > 0;
   const orderedDecades = Array.from(groups.keys()).sort((a, b) =>
     sort === 'desc' ? b - a : a - b,
   );
 
   return orderedDecades.map((decade) => {
     const all = groups.get(decade) ?? [];
-    // Filtering excludes "no champion" rows regardless — they can't
-    // match a team selection by definition, and showing them inside a
+    // Filtering excludes "no champion" rows regardless — they can't match
+    // a franchise selection by definition, and showing them inside a
     // team-filtered view would be misleading.
-    const matches = hasFilter ? all.filter((c) => !c.noChampion && selectedTeams.has(c.name)) : all;
+    const matches = hasFilter
+      ? all.filter((c) => !c.noChampion && selectedFranchiseIds.has(c.franchiseId))
+      : all;
     const sorted = [...matches].sort((a, b) =>
       sort === 'desc' ? b.year - a.year : a.year - b.year,
     );
@@ -51,11 +65,21 @@ export function buildDecadeViews(
   });
 }
 
-/** Unique list of team display names that have ever won a Cup, alphabetical. */
-export function getWinningTeams(champions: Champion[]): string[] {
-  const seen = new Set<string>();
+/**
+ * One entry per Cup-winning franchise, labeled with the franchise's most
+ * recent display name (we walk the dataset in order and let later names
+ * overwrite earlier ones — for Toronto that's "Toronto Maple Leafs", not
+ * "Toronto Blueshirts"). Sorted alphabetically by label for display.
+ *
+ * Using franchise_id as the key means a selection persists through name
+ * changes: picking "Toronto Maple Leafs" matches Blueshirts/Arenas/St.
+ * Patricks wins too.
+ */
+export function getWinningFranchises(champions: Champion[]): FranchiseOption[] {
+  const byId = new Map<string, FranchiseOption>();
   for (const c of champions) {
-    if (!c.noChampion) seen.add(c.name);
+    if (c.noChampion) continue;
+    byId.set(c.franchiseId, { id: c.franchiseId, label: c.name });
   }
-  return Array.from(seen).sort((a, b) => a.localeCompare(b));
+  return Array.from(byId.values()).sort((a, b) => a.label.localeCompare(b.label));
 }

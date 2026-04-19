@@ -1,21 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
+import type { FranchiseOption } from '../../utils/viewModel';
 
 interface TeamFilterProps {
-  allTeams: string[];
-  selectedTeams: ReadonlySet<string>;
+  franchises: FranchiseOption[];
+  selected: ReadonlySet<string>;
   onChange: (next: Set<string>) => void;
 }
 
 // Team multi-select backed by a <details> element. Native disclosure semantics
 // give us keyboard + screen-reader support for free; we layer click-outside and
 // Escape-to-close on top so it behaves like the dropdown readers expect.
-// Checkbox list is scrollable at >~10 teams so the panel stays compact.
-export function TeamFilter({ allTeams, selectedTeams, onChange }: TeamFilterProps) {
+// Selection is keyed by franchise_id so name changes across eras collapse
+// into a single entry — the label shown is the franchise's most recent name.
+export function TeamFilter({ franchises, selected, onChange }: TeamFilterProps) {
   const detailsRef = useRef<HTMLDetailsElement | null>(null);
   const [open, setOpen] = useState(false);
 
-  // Close on outside click + Escape. We can't rely on <details>' own close
-  // behavior alone because clicks on the page outside the summary leave it open.
   useEffect(() => {
     if (!open) return;
     const onDocClick = (e: MouseEvent) => {
@@ -38,16 +38,16 @@ export function TeamFilter({ allTeams, selectedTeams, onChange }: TeamFilterProp
     };
   }, [open]);
 
-  const toggleTeam = (team: string) => {
-    const next = new Set(selectedTeams);
-    if (next.has(team)) next.delete(team);
-    else next.add(team);
+  const toggleFranchise = (id: string) => {
+    const next = new Set(selected);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
     onChange(next);
   };
 
   const clear = () => onChange(new Set());
 
-  const count = selectedTeams.size;
+  const count = selected.size;
   const summaryLabel = count === 0 ? 'All teams' : `${count} selected`;
 
   return (
@@ -73,7 +73,7 @@ export function TeamFilter({ allTeams, selectedTeams, onChange }: TeamFilterProp
       </summary>
       <div className="toolbar__filter-panel" role="group" aria-label="Filter by team">
         <div className="toolbar__filter-header">
-          <span>{count === 0 ? 'Select teams' : `${count} of ${allTeams.length}`}</span>
+          <span>{count === 0 ? 'Select teams' : `${count} of ${franchises.length}`}</span>
           <button
             type="button"
             className="toolbar__filter-clear"
@@ -84,13 +84,17 @@ export function TeamFilter({ allTeams, selectedTeams, onChange }: TeamFilterProp
           </button>
         </div>
         <ul className="toolbar__filter-list">
-          {allTeams.map((team) => {
-            const checked = selectedTeams.has(team);
+          {franchises.map((franchise) => {
+            const checked = selected.has(franchise.id);
             return (
-              <li key={team}>
+              <li key={franchise.id}>
                 <label className="toolbar__filter-option">
-                  <input type="checkbox" checked={checked} onChange={() => toggleTeam(team)} />
-                  <span>{team}</span>
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => toggleFranchise(franchise.id)}
+                  />
+                  <span>{franchise.label}</span>
                 </label>
               </li>
             );

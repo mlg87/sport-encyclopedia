@@ -27,6 +27,12 @@ class MockIntersectionObserver implements IntersectionObserver {
 
 globalThis.IntersectionObserver = MockIntersectionObserver;
 
+// jsdom doesn't implement scrollIntoView; DecadeChips calls it in an effect
+// to keep the active chip centered when scrolling, and ChampionRow's tests
+// render elements that can trip it too. Stub globally so any render chain
+// that touches it doesn't throw.
+Element.prototype.scrollIntoView = () => {};
+
 // prefers-reduced-motion query is used by ChampionRow; default to "not reduced"
 // so the scroll-in path runs normally in tests. A test can override matchMedia
 // per-case if needed.

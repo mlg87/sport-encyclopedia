@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Champion } from '../data';
+import type { Row, LogoResolver } from '../shared/types';
 import { TeamLogo } from './TeamLogo';
 import { TrophyIcon } from './TrophyIcon';
 
 interface ChampionRowProps {
-  champion: Champion;
+  // Accepts the full Row union (winner or no-champion). After the
+  // `champion.noChampion` early-return below, TS narrows to the winner
+  // branch before we call `logoResolver`, which expects a Champion.
+  champion: Row;
   cupCount: number;
   index: number;
+  logoResolver: LogoResolver;
 }
 
 // Threshold at which we stop rendering individual trophy icons and collapse to
@@ -14,7 +18,7 @@ interface ChampionRowProps {
 // once a franchise has more than five cups.
 const TROPHY_INLINE_LIMIT = 5;
 
-export function ChampionRow({ champion, cupCount, index }: ChampionRowProps) {
+export function ChampionRow({ champion, cupCount, index, logoResolver }: ChampionRowProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
 
@@ -99,10 +103,10 @@ export function ChampionRow({ champion, cupCount, index }: ChampionRowProps) {
       <span className="row__accent" style={{ background: champion.color }} aria-hidden="true" />
       <span className="row__logo">
         <TeamLogo
-          abbr={champion.abbr}
-          espnAbbr={champion.espnAbbr}
+          sources={logoResolver(champion)}
           color={champion.color}
           name={champion.name}
+          abbr={champion.abbr}
         />
       </span>
       <span className="row__body">

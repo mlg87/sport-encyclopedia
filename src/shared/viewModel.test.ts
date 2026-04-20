@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { buildDecadeViews, getWinningFranchises } from './viewModel';
-import type { Champion } from '../data';
+import type { Champion, Row } from './types';
 
 const w = (year: number, name: string, franchiseId = name.toLowerCase()): Champion => ({
   year,
@@ -12,7 +12,7 @@ const w = (year: number, name: string, franchiseId = name.toLowerCase()): Champi
   franchiseId,
 });
 
-const DATA: Champion[] = [
+const DATA: Row[] = [
   w(1914, 'Toronto Blueshirts', 'toronto'),
   w(1915, 'Vancouver Millionaires'),
   { year: 1919, noChampion: true, reason: 'influenza' },

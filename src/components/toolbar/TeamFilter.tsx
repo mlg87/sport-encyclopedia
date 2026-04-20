@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { FranchiseOption } from '../../utils/viewModel';
+import type { FranchiseOption } from '../../shared/viewModel';
 
 interface TeamFilterProps {
   franchises: FranchiseOption[];

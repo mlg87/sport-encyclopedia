@@ -3,23 +3,9 @@
 // across name changes (e.g. Toronto Blueshirts → Arenas → St. Patricks → Maple Leafs
 // all share `toronto`; Ottawa Silver Seven → original Ottawa Senators share `ottawa_og`).
 // The modern Ottawa Senators (1992–) are a separate franchise and are not in this list.
-export type Champion =
-  | {
-      year: number;
-      noChampion: false;
-      name: string;
-      abbr: string;
-      espnAbbr: string | null;
-      color: string;
-      franchiseId: string;
-    }
-  | {
-      year: number;
-      noChampion: true;
-      reason: string;
-    };
+import type { Row } from '../../shared/types';
 
-export const CHAMPIONS: Champion[] = [
+export const CHAMPIONS: Row[] = [
   // Challenge Era (1893–1913)
   {
     year: 1893,

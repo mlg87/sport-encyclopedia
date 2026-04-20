@@ -30,3 +30,6 @@ coverage/
 
 # Playwright MCP scratch
 .playwright-mcp/
+
+# Brainstorming companion workspace
+.superpowers/

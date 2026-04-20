@@ -302,3 +302,71 @@ body {
     transition: none;
   }
 }
+
+/* Home hub — grid of sport tiles, one per registered or deferred league. */
+.hub {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+.hub__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.hub__item {
+  margin: 0;
+}
+.hub__tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.25rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+  min-height: 9rem;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+.hub__tile--active:hover,
+.hub__tile--active:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  outline: none;
+}
+.hub__tile--soon {
+  opacity: 0.55;
+  cursor: default;
+}
+.hub__name {
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+}
+.hub__championship {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.7);
+}
+.hub__range {
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+.hub__recent {
+  margin-top: auto;
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.75);
+}
+.hub__soon {
+  margin-top: auto;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(0, 0, 0, 0.6);
+}

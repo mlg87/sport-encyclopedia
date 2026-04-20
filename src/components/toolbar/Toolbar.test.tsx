@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { Toolbar } from './Toolbar';
-import type { FranchiseOption } from '../../utils/viewModel';
+import type { FranchiseOption } from '../../shared/viewModel';
 
 const FRANCHISES: FranchiseOption[] = [
   { id: 'bruins', label: 'Boston Bruins' },

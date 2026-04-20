@@ -11,6 +11,18 @@ export interface Champion {
   espnAbbr: string | null;
   color: string;
   franchiseId: string;
+  /**
+   * Secondary display string shown under the name. Used for F1, where
+   * the Drivers page shows the winning constructor and the Constructors
+   * page shows the championship-winning driver.
+   */
+  subtitle?: string;
+  /**
+   * Competition label shown as a small chip next to the name. Used for
+   * EPL, where the top-flight title was "First Division" through 1991-92
+   * and has been the "Premier League" since 1992-93.
+   */
+  competitionLabel?: string;
 }
 
 export interface NoChampion {

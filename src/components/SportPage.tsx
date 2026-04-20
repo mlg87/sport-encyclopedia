@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { SportConfig } from '../shared/types';
 import { computeRunningTitleCounts } from '../shared/computeTitles';
 import { buildDecadeViews, getWinningFranchises, type SortDirection } from '../shared/viewModel';
@@ -61,6 +62,12 @@ export function SportPage({ sport }: SportPageProps) {
   return (
     <div className="page">
       <DecadeChips decades={decadeNumbers} />
+
+      <nav className="page-nav" aria-label="Site navigation">
+        <Link to="/" className="page-nav__back">
+          <span aria-hidden="true">&larr;</span> All sports
+        </Link>
+      </nav>
 
       <header className="masthead">
         <p className="masthead__kicker">An illustrated ledger</p>

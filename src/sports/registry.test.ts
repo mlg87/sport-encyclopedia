@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { SPORTS, COMING_SOON } from './registry';
 
 describe('sports registry', () => {
-  it('includes NHL and NFL as active sports', () => {
+  it('includes the big four North American leagues, both F1 championships, and EPL', () => {
     const ids = SPORTS.map((s) => s.id);
-    expect(ids).toEqual(['nhl', 'nfl']);
+    expect(ids).toEqual(['nhl', 'nfl', 'nba', 'mlb', 'f1-drivers', 'f1-constructors', 'epl']);
   });
 
   it('assigns unique ids and routes', () => {
@@ -14,17 +14,7 @@ describe('sports registry', () => {
     expect(new Set(routes).size).toBe(routes.length);
   });
 
-  it('lists the four deferred leagues as coming soon', () => {
-    expect(COMING_SOON).toEqual([
-      { id: 'nba', name: 'NBA', championshipName: 'NBA Finals' },
-      { id: 'mlb', name: 'MLB', championshipName: 'World Series' },
-      { id: 'f1-drivers', name: 'F1 Drivers', championshipName: 'Drivers\u2019 Championship' },
-      {
-        id: 'f1-constructors',
-        name: 'F1 Constructors',
-        championshipName: 'Constructors\u2019 Championship',
-      },
-      { id: 'epl', name: 'English top flight', championshipName: 'League title' },
-    ]);
+  it('has no coming-soon entries left - all planned sports are live', () => {
+    expect(COMING_SOON).toEqual([]);
   });
 });

@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { SPORTS, COMING_SOON } from './registry';
 
 describe('sports registry', () => {
-  it('includes NHL and NFL as active sports', () => {
+  it('includes NHL, NFL, and NBA as active sports', () => {
     const ids = SPORTS.map((s) => s.id);
-    expect(ids).toEqual(['nhl', 'nfl']);
+    expect(ids).toEqual(['nhl', 'nfl', 'nba']);
   });
 
   it('assigns unique ids and routes', () => {
@@ -16,7 +16,6 @@ describe('sports registry', () => {
 
   it('lists the four deferred leagues as coming soon', () => {
     expect(COMING_SOON).toEqual([
-      { id: 'nba', name: 'NBA', championshipName: 'NBA Finals' },
       { id: 'mlb', name: 'MLB', championshipName: 'World Series' },
       { id: 'f1-drivers', name: 'F1 Drivers', championshipName: 'Drivers\u2019 Championship' },
       {

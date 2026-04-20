@@ -39,7 +39,7 @@ describe('eplConfig', () => {
     }
   });
 
-  it('logoResolver returns [] for every row (text-badge tier only)', () => {
+  it('logoResolver returns ESPN soccer URL for a known franchise', () => {
     const urls = eplConfig.logoResolver({
       year: 2024,
       noChampion: false,
@@ -49,6 +49,35 @@ describe('eplConfig', () => {
       color: '#6CABDD',
       franchiseId: 'man_city',
       competitionLabel: 'Premier League',
+    });
+    expect(urls).toEqual(['https://a.espncdn.com/i/teamlogos/soccer/500/382.png']);
+  });
+
+  it('logoResolver routes historical club names through the franchiseId', () => {
+    // "The Wednesday" (1903-04) and modern Sheffield Wednesday share the
+    // sheff_wed franchiseId, so both must resolve to the same ESPN logo.
+    const urls = eplConfig.logoResolver({
+      year: 1903,
+      noChampion: false,
+      name: 'The Wednesday',
+      abbr: 'SHW',
+      espnAbbr: null,
+      color: '#1D44A6',
+      franchiseId: 'sheff_wed',
+      competitionLabel: 'First Division',
+    });
+    expect(urls).toEqual(['https://a.espncdn.com/i/teamlogos/soccer/500/399.png']);
+  });
+
+  it('logoResolver returns [] for an unknown franchiseId', () => {
+    const urls = eplConfig.logoResolver({
+      year: 2024,
+      noChampion: false,
+      name: 'Unknown FC',
+      abbr: 'UNK',
+      espnAbbr: null,
+      color: '#000000',
+      franchiseId: 'not_a_real_id',
     });
     expect(urls).toEqual([]);
   });

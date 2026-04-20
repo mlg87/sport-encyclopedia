@@ -1,12 +1,46 @@
 import type { LogoResolver, SportConfig } from '../../shared/types';
 import { CHAMPIONS } from './data';
 
-// EPL has no public team-logo CDN we can reliably hit across 24 clubs
-// spanning 136 years of history (including defunct ground sharers and
-// pre-1915 kit identities). Return [] for every row so TeamLogo skips
-// straight to the text-badge tier, which is designed to render
-// indistinguishably well for every era.
-const logoResolver: LogoResolver = () => [];
+// ESPN's soccer logo CDN keys on numeric team IDs, e.g.
+// https://a.espncdn.com/i/teamlogos/soccer/500/360.png for Manchester
+// United. Every club that ever won the English top flight still has an
+// ESPN record (current PL, Championship, or League One), so we map each
+// EPL franchiseId to its ESPN numeric id and let the resolver build the
+// URL. Keeping the table in the config (not on every data row) mirrors
+// the franchiseId stability guarantee: no EPL club relocates, so one id
+// per franchise is sufficient - and it avoids repeating the same id
+// across the 20+ Man United / 19 Liverpool rows.
+const ESPN_ID_BY_FRANCHISE: Record<string, string> = {
+  preston: '394',
+  everton: '368',
+  sunderland: '366',
+  aston_villa: '362',
+  sheff_united: '398',
+  liverpool: '364',
+  sheff_wed: '399',
+  newcastle: '361',
+  man_united: '360',
+  blackburn: '365',
+  west_brom: '383',
+  burnley: '379',
+  huddersfield: '335',
+  arsenal: '359',
+  man_city: '382',
+  portsmouth: '385',
+  tottenham: '367',
+  wolves: '380',
+  chelsea: '363',
+  ipswich: '373',
+  leeds: '357',
+  derby: '374',
+  forest: '393',
+  leicester: '375',
+};
+
+const logoResolver: LogoResolver = (c) => {
+  const id = ESPN_ID_BY_FRANCHISE[c.franchiseId];
+  return id ? [`https://a.espncdn.com/i/teamlogos/soccer/500/${id}.png`] : [];
+};
 
 export const eplConfig: SportConfig = {
   id: 'epl',

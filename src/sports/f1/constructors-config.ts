@@ -1,10 +1,29 @@
 import type { LogoResolver, SportConfig } from '../../shared/types';
 import { CONSTRUCTORS_CHAMPIONS } from './constructors';
 
-// F1 constructors share the Drivers page's logo story: no reliable public
-// logo CDN for historical team names, so the resolver returns [] and the
-// TeamLogo cascade renders a color-filled text badge.
-const logoResolver: LogoResolver = () => [];
+// Formula1.com hosts team logos at a stable DAM path keyed by team
+// slug: https://media.formula1.com/content/dam/fom-website/teams/2025/<slug>-logo.png
+// Only teams currently on the grid have logos there, so the map only
+// covers franchiseIds still competing (ferrari/mclaren/mercedes/
+// red_bull/williams). Defunct or one-off championship constructors
+// (vanwall, cooper, brm, lotus, brabham, matra, tyrrell, benetton,
+// renault-the-2005-factory-team, brawn) have no modern logo and fall
+// through to TeamLogo's text-badge tier - the dataset's per-row color
+// still carries the visual identity.
+const F1_LOGO_BY_FRANCHISE: Record<string, string> = {
+  ferrari: 'ferrari',
+  mclaren: 'mclaren',
+  mercedes: 'mercedes',
+  red_bull: 'red-bull-racing',
+  williams: 'williams',
+};
+
+const logoResolver: LogoResolver = (c) => {
+  const slug = F1_LOGO_BY_FRANCHISE[c.franchiseId];
+  return slug
+    ? [`https://media.formula1.com/content/dam/fom-website/teams/2025/${slug}-logo.png`]
+    : [];
+};
 
 export const f1ConstructorsConfig: SportConfig = {
   id: 'f1-constructors',

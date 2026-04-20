@@ -26,9 +26,11 @@
 // `subtitle` undefined — the cross-reference back to the Drivers page
 // is only meaningful when both titles went to the same entity.
 //
-// `espnAbbr` is null on every row for the same reason as drivers.ts:
-// no reliable public logo CDN for historical F1 constructors. The text
-// badge tier of TeamLogo handles display, keyed by each row's `color`.
+// `espnAbbr` is null on every row: we resolve logos by franchiseId
+// through a map in constructors-config.ts. formula1.com hosts logos
+// only for constructors currently on the grid (ferrari, mclaren,
+// mercedes, red_bull, williams), so defunct / one-off champions fall
+// through to TeamLogo's text-badge tier keyed by each row's `color`.
 
 import type { Row } from '../../shared/types';
 

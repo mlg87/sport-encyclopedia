@@ -56,15 +56,22 @@ The site is a React Router app with one route per registered sport:
 `src/sports/registry.ts` exports two lists:
 
 - `SPORTS: SportConfig[]` — active sports that render as linkable tiles on
-  the hub and get their own route. Currently NHL and NFL.
-- `COMING_SOON: ComingSoonEntry[]` — inert tiles on the hub, one per
-  deferred league (NBA, MLB, F1 Drivers, F1 Constructors, EPL). Each will
-  get its own follow-up spec under `docs/superpowers/specs/`.
+  the hub and get their own route. Currently **NHL, NFL, NBA, MLB, F1
+  Drivers, F1 Constructors, and EPL** (English top flight).
+- `COMING_SOON: ComingSoonEntry[]` — inert tiles on the hub. Currently
+  empty; kept in the shell so future leagues can be queued up without
+  changing `HomeHub`.
 
 Adding a new sport = create `src/sports/<id>/{data,config,milestones.test}.ts`
 and push the config onto `SPORTS`. `SportPage`, `HomeHub`, `TeamLogo`, and
 `computeRunningTitleCounts` all consume the generic contract; no component
 code needs to change.
+
+F1 is a minor exception to "one folder per sport" because the two F1
+championships (Drivers, Constructors) share a folder at `src/sports/f1/`
+with files prefixed `drivers-` and `constructors-`. Each still produces
+its own `SportConfig` with a distinct route (`/f1/drivers`,
+`/f1/constructors`).
 
 ### Data model (`src/shared/types.ts`, `src/sports/<id>/data.ts`)
 
@@ -88,10 +95,47 @@ championship counts. It rolls up through team renames and relocations:
   Football Team → Commanders (3 SBs). Per the NFL's own ruling, Browns
   and Ravens are distinct franchises — the Browns' records stayed in
   Cleveland after the 1996 relocation, so `ravens` begins fresh in 1996.
+- **NBA:** `lakers` covers Minneapolis → Los Angeles (17 titles);
+  `warriors` covers Philadelphia → San Francisco → Golden State;
+  `hawks` covers Tri-Cities → Milwaukee → St. Louis → Atlanta; `kings`
+  covers Rochester Royals → Cincinnati Royals → KC-Omaha Kings → KC
+  Kings → Sacramento; `sixers` covers Syracuse Nationals → Philadelphia
+  76ers; `pistons` covers Fort Wayne → Detroit; `wizards` covers
+  Chicago Packers → Chicago Zephyrs → Baltimore Bullets (1963+) →
+  Capital Bullets → Washington Bullets → Washington Wizards; `thunder`
+  covers Seattle SuperSonics → OKC Thunder. The 1948 BAA champion
+  **original** Baltimore Bullets (disbanded 1954) are a separate,
+  defunct franchise under `baltimore_bullets_og` — they must not roll
+  up with the modern `wizards` lineage.
+- **MLB:** `braves` covers Boston → Milwaukee → Atlanta; `dodgers`
+  covers Brooklyn → LA; `giants` covers NY → SF; `athletics` covers
+  Philadelphia → KC → Oakland; `orioles` covers St. Louis Browns →
+  Baltimore; `twins` covers (original) Washington Senators → Minnesota.
+  **Three distinct Washington franchises:** the 1924 Senators roll up
+  to `twins`; the 1961–71 expansion Senators roll up to `rangers`; the
+  current Nationals (Expos lineage) are `nationals`.
+- **F1 Drivers:** `franchiseId` is a per-driver slug
+  (`hamilton_lewis`, `schumacher_michael`, ...) — running totals track
+  career championships, not team totals. `subtitle` carries the winning
+  constructor that year.
+- **F1 Constructors:** `franchiseId` rolls up recognizable team
+  lineages (e.g. `lotus` across Lotus-Climax and Lotus-Ford; `red_bull`
+  across Red Bull-Renault and Red Bull Racing). Short-lived distinct
+  entities (`vanwall`, `matra`, `tyrrell`, `benetton`, `brawn`) each
+  keep their own id. `subtitle` is populated only when the
+  constructor's own driver also won the drivers' title that year.
+- **EPL:** no relocations — each club has a single stable
+  `franchiseId`. Sheffield Wednesday's 1903 and 1904 titles were won
+  under the club's earlier name "The Wednesday" but still roll up via
+  `sheff_wed`. Each winning row carries a `competitionLabel` of
+  `'First Division'` (1889–1992) or `'Premier League'` (1993+), shown
+  as a small chip next to the name so Man United's 20 titles visibly
+  span both eras.
 
 When adding or correcting data, update the matching
-`src/sports/<id>/milestones.test.ts`. Both NHL and NFL tests spot-check
-four franchise milestones plus, for NFL, the four continuity rollups.
+`src/sports/<id>/milestones.test.ts`. Every sport's test spot-checks a
+handful of canonical franchise milestones plus the continuity
+rollups — that's the guardrail against franchiseId typos.
 
 ### Running totals (`src/shared/computeTitles.ts`)
 
@@ -113,6 +157,18 @@ passes the resulting list down to `TeamLogo`.
 - **NFL:** `[espnPng, textBadge]` — no public NFL SVG CDN, so the chain
   is two tiers. Historical team names (Oakland Raiders, Washington
   Redskins) resolve to the current franchise's ESPN logo via `espnAbbr`.
+- **NBA:** `[espnPng, textBadge]`. The ESPN abbr always points at the
+  modern franchise (Sonics row → `okc`, Syracuse Nationals row → `phi`).
+  The 1948 original Baltimore Bullets have `espnAbbr: null` and always
+  text-badge.
+- **MLB:** `[espnPng, textBadge]`, same pattern — historical names
+  route through the modern franchise's ESPN slug (`oak` for Philadelphia
+  Athletics, `atl` for Boston Braves, `lad` for Brooklyn Dodgers).
+- **F1 Drivers / Constructors / EPL:** `[]` — no public logo CDN worth
+  wiring up for these. The resolver returns empty, and every row
+  renders as a color-filled text badge. This is fine: the color accent
+  still conveys team/constructor identity, and the name/abbr are
+  inline.
 
 Pre-1915 NHL teams have no `espnAbbr`, so their chain is just
 `[nhlSvg_dark, textBadge]` — and since the NHL CDN doesn't have those

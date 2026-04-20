@@ -1,4 +1,4 @@
-import type { Champion } from '../data';
+import type { Row } from './types';
 
 export type SortDirection = 'desc' | 'asc';
 
@@ -8,7 +8,7 @@ export type SortDirection = 'desc' | 'asc';
 // is derived per render with the current toolbar state.
 export interface DecadeView {
   decade: number;
-  entries: Champion[];
+  entries: Row[];
   /** True when a filter is active AND the decade has no matching champions. */
   empty: boolean;
 }
@@ -26,12 +26,12 @@ export interface FranchiseOption {
 }
 
 export function buildDecadeViews(
-  champions: Champion[],
+  rows: Row[],
   selectedFranchiseIds: ReadonlySet<string>,
   sort: SortDirection,
 ): DecadeView[] {
-  const groups = new Map<number, Champion[]>();
-  for (const c of champions) {
+  const groups = new Map<number, Row[]>();
+  for (const c of rows) {
     const decade = Math.floor(c.year / 10) * 10;
     const bucket = groups.get(decade);
     if (bucket) {
@@ -75,9 +75,9 @@ export function buildDecadeViews(
  * changes: picking "Toronto Maple Leafs" matches Blueshirts/Arenas/St.
  * Patricks wins too.
  */
-export function getWinningFranchises(champions: Champion[]): FranchiseOption[] {
+export function getWinningFranchises(rows: Row[]): FranchiseOption[] {
   const byId = new Map<string, FranchiseOption>();
-  for (const c of champions) {
+  for (const c of rows) {
     if (c.noChampion) continue;
     byId.set(c.franchiseId, { id: c.franchiseId, label: c.name });
   }

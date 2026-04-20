@@ -1,4 +1,4 @@
-import type { FranchiseOption, SortDirection } from '../../utils/viewModel';
+import type { FranchiseOption, SortDirection } from '../../shared/viewModel';
 import { SortToggle } from './SortToggle';
 import { TeamFilter } from './TeamFilter';
 

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { CHAMPIONS } from './data';
 import { computeRunningTitleCounts } from './shared/computeTitles';
-import { buildDecadeViews, getWinningFranchises, type SortDirection } from './utils/viewModel';
+import { buildDecadeViews, getWinningFranchises, type SortDirection } from './shared/viewModel';
 import { ChampionRow } from './components/ChampionRow';
 import { DecadeGroup } from './components/DecadeGroup';
 import { DecadeChips } from './components/nav/DecadeChips';

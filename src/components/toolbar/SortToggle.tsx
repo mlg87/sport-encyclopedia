@@ -1,4 +1,4 @@
-import type { SortDirection } from '../../utils/viewModel';
+import type { SortDirection } from '../../shared/viewModel';
 
 interface SortToggleProps {
   sort: SortDirection;

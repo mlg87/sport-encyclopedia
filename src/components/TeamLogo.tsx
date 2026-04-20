@@ -1,28 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { isDark } from '../shared/isDark';
 
 interface TeamLogoProps {
-  abbr: string;
-  espnAbbr: string | null;
+  /** Ordered list of image URLs to try. On total failure, or when empty,
+      the component renders a color-filled text badge. Callers build this
+      list via their sport's logoResolver. */
+  sources: string[];
   color: string;
   name: string;
+  abbr: string;
   size?: number;
 }
 
-// Builds a cascading list of candidate logo URLs and renders the first that loads.
-// On total failure we render a color-filled text badge so the layout never breaks.
-// Order matches the product spec: ESPN → NHL SVG → text badge.
-function buildSources(abbr: string, espnAbbr: string | null): string[] {
-  const sources: string[] = [];
-  if (espnAbbr) {
-    sources.push(`https://a.espncdn.com/i/teamlogos/nhl/500/${espnAbbr}.png`);
-  }
-  sources.push(`https://assets.nhle.com/logos/nhl/svg/${abbr}_dark.svg`);
-  return sources;
-}
-
-export function TeamLogo({ abbr, espnAbbr, color, name, size = 28 }: TeamLogoProps) {
-  const sources = useMemo(() => buildSources(abbr, espnAbbr), [abbr, espnAbbr]);
+export function TeamLogo({ sources, color, name, abbr, size = 28 }: TeamLogoProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const [failed, setFailed] = useState(sources.length === 0);
 

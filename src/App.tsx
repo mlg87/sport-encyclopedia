@@ -2,12 +2,26 @@ import { useMemo, useState } from 'react';
 import { CHAMPIONS } from './data';
 import { computeRunningTitleCounts } from './shared/computeTitles';
 import { buildDecadeViews, getWinningFranchises, type SortDirection } from './shared/viewModel';
+import type { LogoResolver } from './shared/types';
 import { ChampionRow } from './components/ChampionRow';
 import { DecadeGroup } from './components/DecadeGroup';
 import { DecadeChips } from './components/nav/DecadeChips';
 import { Toolbar } from './components/toolbar/Toolbar';
 import './components/nav/nav.css';
 import './components/toolbar/toolbar.css';
+
+// TEMPORARY: lives here until Group D moves it into sports/nhl/config.ts.
+// Preserves the pre-refactor TeamLogo cascade order: ESPN PNG first (when
+// espnAbbr is present), then NHL SVG. TeamLogo falls back to a text badge
+// if both error or the list is empty.
+const nhlLogoResolver: LogoResolver = (c) => {
+  const urls: string[] = [];
+  if (c.espnAbbr) {
+    urls.push(`https://a.espncdn.com/i/teamlogos/nhl/500/${c.espnAbbr}.png`);
+  }
+  urls.push(`https://assets.nhle.com/logos/nhl/svg/${c.abbr}_dark.svg`);
+  return urls;
+};
 
 export default function App() {
   // Cup counts are always computed chronologically off the full dataset —
@@ -106,6 +120,7 @@ export default function App() {
                 champion={champion}
                 cupCount={cupCountByYear.get(champion.year) ?? 0}
                 index={i}
+                logoResolver={nhlLogoResolver}
               />
             ))}
           </DecadeGroup>

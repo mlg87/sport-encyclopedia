@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { isDark } from '../utils/isDark';
+import { isDark } from '../shared/isDark';
 
 interface TeamLogoProps {
   abbr: string;

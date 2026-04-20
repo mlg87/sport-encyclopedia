@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { SPORTS, COMING_SOON } from './registry';
 
 describe('sports registry', () => {
-  it('includes NHL', () => {
+  it('includes NHL and NFL as active sports', () => {
     const ids = SPORTS.map((s) => s.id);
-    expect(ids).toContain('nhl');
+    expect(ids).toEqual(['nhl', 'nfl']);
   });
 
   it('assigns unique ids and routes', () => {

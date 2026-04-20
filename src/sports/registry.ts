@@ -1,9 +1,10 @@
 import type { SportConfig } from '../shared/types';
 import { nhlConfig } from './nhl/config';
+import { nflConfig } from './nfl/config';
 
 /** Active, user-visible sports. Ordered by launch date — NHL is the original,
     NFL is the proof league for the multi-sport refactor. */
-export const SPORTS: SportConfig[] = [nhlConfig];
+export const SPORTS: SportConfig[] = [nhlConfig, nflConfig];
 
 /** Deferred leagues rendered as inert tiles on the home hub. Each entry
     will become a full SportConfig in its own follow-up spec. */

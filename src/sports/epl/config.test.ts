@@ -12,9 +12,9 @@ describe('eplConfig', () => {
   });
 
   it('wires rows through to the English top-flight dataset', () => {
-    // 136 seasons from 1888-89 (year 1889) through 2023-24 (year 2024),
+    // 137 seasons from 1888-89 (year 1889) through 2024-25 (year 2025),
     // inclusive of 11 noChampion rows covering WWI and WWII suspensions.
-    expect(eplConfig.rows.length).toBe(136);
+    expect(eplConfig.rows.length).toBe(137);
     expect(eplConfig.rows[0]).toMatchObject({
       year: 1889,
       name: 'Preston North End',

@@ -13,9 +13,9 @@ describe('f1ConstructorsConfig', () => {
     expect(f1ConstructorsConfig.firstYear).toBe(1958);
   });
 
-  it('wires rows through to the 1958-2024 constructors dataset', () => {
-    // 67 constructors' championships from 1958 through 2024 inclusive.
-    expect(f1ConstructorsConfig.rows.length).toBe(67);
+  it('wires rows through to the 1958-2025 constructors dataset', () => {
+    // 68 constructors' championships from 1958 through 2025 inclusive.
+    expect(f1ConstructorsConfig.rows.length).toBe(68);
     expect(f1ConstructorsConfig.rows[0]).toMatchObject({ year: 1958, name: 'Vanwall' });
   });
 

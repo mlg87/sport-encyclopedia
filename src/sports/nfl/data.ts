@@ -549,4 +549,13 @@ export const CHAMPIONS: Row[] = [
     color: '#004C54',
     franchiseId: 'eagles',
   },
+  {
+    year: 2025,
+    noChampion: false,
+    name: 'Seattle Seahawks',
+    abbr: 'SEA',
+    espnAbbr: 'sea',
+    color: '#002244',
+    franchiseId: 'seahawks',
+  },
 ];

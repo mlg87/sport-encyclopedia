@@ -15,6 +15,9 @@ describe('EPL dataset milestones', () => {
     expect(byYear.get(2013)).toBe(20);
     // Liverpool through 2020: 18 First Division + 1 Premier League = 19.
     expect(byYear.get(2020)).toBe(19);
+    // Liverpool through 2025: adds a second Premier League title (2024-25),
+    // tying Manchester United at 20.
+    expect(byYear.get(2025)).toBe(20);
     // Arsenal through 2004: 10 First Division + 3 Premier League = 13.
     expect(byYear.get(2004)).toBe(13);
     // Everton through 1987: 9 titles, all First Division. The 1915 and

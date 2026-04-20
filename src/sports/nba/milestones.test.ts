@@ -22,6 +22,17 @@ describe('NBA dataset milestones', () => {
     expect(byYear.get(1998)).toBe(6);
   });
 
+  it('rolls Thunder franchise across Seattle SuperSonics and OKC', () => {
+    const counts = computeRunningTitleCounts(CHAMPIONS);
+    const byYear = new Map<number, number>();
+    CHAMPIONS.forEach((c, i) => byYear.set(c.year, counts[i]));
+
+    // 1979 was Seattle SuperSonics; 2025 was OKC Thunder. Same franchise
+    // under the `thunder` id; running total is 2 by end of 2025.
+    expect(byYear.get(1979)).toBe(1);
+    expect(byYear.get(2025)).toBe(2);
+  });
+
   it('rolls Hawks franchise across Tri-Cities / Milwaukee / St. Louis / Atlanta', () => {
     const counts = computeRunningTitleCounts(CHAMPIONS);
     const byYear = new Map<number, number>();

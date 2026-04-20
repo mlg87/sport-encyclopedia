@@ -21,12 +21,15 @@ describe('F1 Constructors dataset milestones', () => {
     // Williams: 9 titles through 1997 (1980, 81, 86, 87, 92, 93, 94, 96, 97).
     expect(byKey.get('williams:1997')).toBe(9);
     // McLaren: 9 titles through 2024 (1974, 84, 85, 88, 89, 90, 91, 98,
-    // 2024) — 2024 was their first since 1998.
+    // 2024) — 2024 was their first since 1998. Back-to-back in 2025
+    // brings the franchise total to 10.
     expect(byKey.get('mclaren:2024')).toBe(9);
+    expect(byKey.get('mclaren:2025')).toBe(10);
     // Mercedes as a constructor entity: 7 titles through 2020. The 1954/55
     // Fangio titles predate the constructors' championship (instituted
-    // 1958), so they don't count here.
+    // 1958), so they don't count here. 2021 adds an eighth.
     expect(byKey.get('mercedes:2020')).toBe(7);
+    expect(byKey.get('mercedes:2021')).toBe(8);
   });
 
   it('rolls Lotus across Climax and Ford engine eras', () => {

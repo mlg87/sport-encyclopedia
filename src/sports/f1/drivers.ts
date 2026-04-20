@@ -803,4 +803,14 @@ export const DRIVERS_CHAMPIONS: Row[] = [
     franchiseId: 'verstappen_max',
     subtitle: 'Red Bull Racing',
   },
+  {
+    year: 2025,
+    noChampion: false,
+    name: 'Lando Norris',
+    abbr: 'NOR',
+    espnAbbr: null,
+    color: COLOR_MCLAREN,
+    franchiseId: 'norris_lando',
+    subtitle: 'McLaren-Mercedes',
+  },
 ];

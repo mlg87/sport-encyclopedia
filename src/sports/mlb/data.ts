@@ -1131,4 +1131,13 @@ export const CHAMPIONS: Row[] = [
     color: '#005A9C',
     franchiseId: 'dodgers',
   },
+  {
+    year: 2025,
+    noChampion: false,
+    name: 'Los Angeles Dodgers',
+    abbr: 'LAD',
+    espnAbbr: 'lad',
+    color: '#005A9C',
+    franchiseId: 'dodgers',
+  },
 ];

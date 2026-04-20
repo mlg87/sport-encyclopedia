@@ -12,9 +12,9 @@ describe('mlbConfig', () => {
   });
 
   it('wires rows through to the World Series dataset', () => {
-    // 122 entries: 120 champion rows + 2 noChampion rows (1904 Giants
-    // refusal, 1994 players' strike) covering 1903-2024 inclusive.
-    expect(mlbConfig.rows.length).toBe(122);
+    // 123 entries: 121 champion rows + 2 noChampion rows (1904 Giants
+    // refusal, 1994 players' strike) covering 1903-2025 inclusive.
+    expect(mlbConfig.rows.length).toBe(123);
     expect(mlbConfig.rows[0]).toMatchObject({ year: 1903, name: 'Boston Americans' });
   });
 

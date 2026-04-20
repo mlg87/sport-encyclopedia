@@ -12,8 +12,8 @@ describe('nbaConfig', () => {
   });
 
   it('wires rows through to the NBA Finals dataset', () => {
-    // 78 Finals from 1946-47 (year 1947) through 2023-24 (year 2024).
-    expect(nbaConfig.rows.length).toBe(78);
+    // 79 Finals from 1946-47 (year 1947) through 2024-25 (year 2025).
+    expect(nbaConfig.rows.length).toBe(79);
     expect(nbaConfig.rows[0]).toMatchObject({ year: 1947, name: 'Philadelphia Warriors' });
   });
 

@@ -11,9 +11,9 @@ describe('f1DriversConfig', () => {
     expect(f1DriversConfig.firstYear).toBe(1950);
   });
 
-  it('wires rows through to the 1950-2024 drivers dataset', () => {
-    // 75 drivers' championships from 1950 through 2024 inclusive.
-    expect(f1DriversConfig.rows.length).toBe(75);
+  it('wires rows through to the 1950-2025 drivers dataset', () => {
+    // 76 drivers' championships from 1950 through 2025 inclusive.
+    expect(f1DriversConfig.rows.length).toBe(76);
     expect(f1DriversConfig.rows[0]).toMatchObject({ year: 1950, name: 'Giuseppe Farina' });
   });
 

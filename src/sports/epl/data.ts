@@ -1298,4 +1298,14 @@ export const CHAMPIONS: Row[] = [
     franchiseId: 'man_city',
     competitionLabel: 'Premier League',
   },
+  {
+    year: 2025,
+    noChampion: false,
+    name: 'Liverpool',
+    abbr: 'LIV',
+    espnAbbr: null,
+    color: '#C8102E',
+    franchiseId: 'liverpool',
+    competitionLabel: 'Premier League',
+  },
 ];

@@ -727,4 +727,13 @@ export const CHAMPIONS: Row[] = [
     color: '#007A33',
     franchiseId: 'celtics',
   },
+  {
+    year: 2025,
+    noChampion: false,
+    name: 'Oklahoma City Thunder',
+    abbr: 'OKC',
+    espnAbbr: 'okc',
+    color: '#007AC1',
+    franchiseId: 'thunder',
+  },
 ];

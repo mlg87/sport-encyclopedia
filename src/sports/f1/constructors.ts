@@ -731,4 +731,15 @@ export const CONSTRUCTORS_CHAMPIONS: Row[] = [
     color: COLOR_MCLAREN,
     franchiseId: 'mclaren',
   },
+  {
+    year: 2025,
+    noChampion: false,
+    // Back-to-back for McLaren; Norris also won drivers' for them.
+    name: 'McLaren-Mercedes',
+    abbr: 'MCL',
+    espnAbbr: null,
+    color: COLOR_MCLAREN,
+    franchiseId: 'mclaren',
+    subtitle: 'Lando Norris',
+  },
 ];

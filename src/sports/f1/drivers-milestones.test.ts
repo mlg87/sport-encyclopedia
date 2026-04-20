@@ -26,6 +26,8 @@ describe('F1 Drivers dataset milestones', () => {
     expect(lastByDriverThroughYear.get('fangio_juan_manuel:1957')).toBe(5);
     // Verstappen: 4 career titles through 2024 (2021-24).
     expect(lastByDriverThroughYear.get('verstappen_max:2024')).toBe(4);
+    // Norris: first title in 2025.
+    expect(lastByDriverThroughYear.get('norris_lando:2025')).toBe(1);
   });
 
   it('keeps the three different Hills on distinct driver ids', () => {

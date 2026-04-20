@@ -12,7 +12,7 @@ describe('nflConfig', () => {
   });
 
   it('wires rows through to the Super Bowl dataset', () => {
-    expect(nflConfig.rows.length).toBe(59);
+    expect(nflConfig.rows.length).toBe(60);
     expect(nflConfig.rows[0]).toMatchObject({ year: 1966, name: 'Green Bay Packers' });
   });
 

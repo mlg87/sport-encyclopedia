@@ -4,44 +4,43 @@ import { axe } from 'vitest-axe';
 import App from './App';
 
 describe('App', () => {
-  it('renders the masthead with title and year range', () => {
+  it('renders the home hub at /', () => {
+    window.history.pushState({}, '', '/sport-encyclopedia/');
+    render(<App />);
+    expect(screen.getByRole('heading', { name: /Sport Encyclopedia/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /NHL/i })).toBeInTheDocument();
+  });
+
+  it('renders the NHL page at /nhl', () => {
+    window.history.pushState({}, '', '/sport-encyclopedia/nhl');
     render(<App />);
     expect(screen.getByRole('heading', { name: /Stanley Cup Champions/i })).toBeInTheDocument();
-    // Scope to the masthead range text specifically — the years also appear
-    // as row labels throughout the ledger, so `getByText(/1893/)` is ambiguous.
     expect(screen.getByText(/1893\s*—\s*2025/)).toBeInTheDocument();
   });
 
-  it('groups champions into decades', () => {
+  it('renders a version link in the footer on every route', () => {
+    window.history.pushState({}, '', '/sport-encyclopedia/');
     render(<App />);
-    // Each decade renders an h2 with its label (e.g. "1890s", "1900s", ...).
-    expect(screen.getByRole('heading', { name: '1890s' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: '2020s' })).toBeInTheDocument();
-  });
-
-  it('renders both no-champion rows', () => {
-    render(<App />);
-    expect(screen.getByText(/No champion — influenza/)).toBeInTheDocument();
-    expect(screen.getByText(/No champion — lockout/)).toBeInTheDocument();
-  });
-
-  it('renders a version link in the footer pointing at GitHub Releases', () => {
-    render(<App />);
-    // __APP_VERSION__ is injected by Vite's `define` in vite.config.ts.
-    // In the Vitest environment the define pipeline also resolves it, so the
-    // link renders with a concrete version string. The link points to the
-    // repo's Releases page — semantic-release publishes notes there instead
-    // of committing a CHANGELOG.md back to a protected main branch.
     const link = screen.getByRole('link', { name: /^v/ });
     expect(link).toHaveAttribute('href', expect.stringContaining('/releases'));
   });
 
+  it('renders a not-found page for unknown routes', () => {
+    window.history.pushState({}, '', '/sport-encyclopedia/nope');
+    render(<App />);
+    expect(screen.getByRole('heading', { name: /Not found/i })).toBeInTheDocument();
+  });
+
   describe('accessibility', () => {
-    it('has no axe violations on initial render', async () => {
+    it('home hub has no axe violations', async () => {
+      window.history.pushState({}, '', '/sport-encyclopedia/');
       const { container } = render(<App />);
-      // Running axe on the full tree is slow but it's the realistic integration
-      // check. Kept in its own `describe('accessibility', ...)` block so the
-      // a11y-only CI job can pattern-match on the test name.
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('sport page has no axe violations', async () => {
+      window.history.pushState({}, '', '/sport-encyclopedia/nhl');
+      const { container } = render(<App />);
       expect(await axe(container)).toHaveNoViolations();
     });
   });

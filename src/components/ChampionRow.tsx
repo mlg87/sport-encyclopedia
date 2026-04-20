@@ -110,7 +110,15 @@ export function ChampionRow({ champion, cupCount, index, logoResolver }: Champio
         />
       </span>
       <span className="row__body">
-        <span className="row__name">{champion.name}</span>
+        <span className="row__label">
+          <span className="row__name-line">
+            <span className="row__name">{champion.name}</span>
+            {champion.competitionLabel && (
+              <span className="row__competition-label">{champion.competitionLabel}</span>
+            )}
+          </span>
+          {champion.subtitle && <span className="row__subtitle">{champion.subtitle}</span>}
+        </span>
         {renderTrophies()}
       </span>
     </div>

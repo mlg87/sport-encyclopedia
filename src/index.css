@@ -51,6 +51,28 @@ body {
   }
 }
 
+/* --- page nav (back-to-hub link) --- */
+.page-nav {
+  margin-bottom: 12px;
+}
+
+.page-nav__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+
+.page-nav__back:hover,
+.page-nav__back:focus-visible {
+  color: var(--ink);
+  text-decoration: underline;
+  outline: none;
+}
+
 /* --- masthead --- */
 .masthead {
   text-align: left;
@@ -217,6 +239,21 @@ body {
   min-width: 0;
 }
 
+.row__label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.row__name-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
 .row__name {
   font-size: 0.98rem;
   font-weight: 500;
@@ -224,6 +261,29 @@ body {
   letter-spacing: -0.005em;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row__subtitle {
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  letter-spacing: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row__competition-label {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--rule, rgba(0, 0, 0, 0.08));
+  color: var(--ink-faint);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { CHAMPIONS } from './data';
-import { computeRunningCupCounts } from './utils/computeCups';
+import { computeRunningTitleCounts } from './shared/computeTitles';
 import { buildDecadeViews, getWinningFranchises, type SortDirection } from './utils/viewModel';
 import { ChampionRow } from './components/ChampionRow';
 import { DecadeGroup } from './components/DecadeGroup';
@@ -15,7 +15,7 @@ export default function App() {
   // shouldn't change with sort direction or filter selection. We key by
   // year (unique) so the lookup survives any decade reordering.
   const cupCountByYear = useMemo(() => {
-    const counts = computeRunningCupCounts(CHAMPIONS);
+    const counts = computeRunningTitleCounts(CHAMPIONS);
     const map = new Map<number, number>();
     CHAMPIONS.forEach((c, i) => map.set(c.year, counts[i]));
     return map;

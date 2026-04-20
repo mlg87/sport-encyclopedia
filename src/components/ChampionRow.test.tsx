@@ -2,8 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'vitest-axe';
 import { ChampionRow } from './ChampionRow';
-import type { Champion } from '../data';
-import type { LogoResolver } from '../shared/types';
+import type { Champion, LogoResolver, Row } from '../shared/types';
 
 const stubResolver: LogoResolver = (c) =>
   c.espnAbbr ? [`https://a.espncdn.com/i/teamlogos/nhl/500/${c.espnAbbr}.png`] : [];
@@ -18,7 +17,7 @@ const win: Champion = {
   franchiseId: 'canadiens',
 };
 
-const empty: Champion = {
+const empty: Row = {
   year: 1919,
   noChampion: true,
   reason: 'influenza',

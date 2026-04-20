@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { CHAMPIONS } from './data';
+import { CHAMPIONS } from './sports/nhl/data';
 import { computeRunningTitleCounts } from './shared/computeTitles';
 import { buildDecadeViews, getWinningFranchises, type SortDirection } from './shared/viewModel';
 import type { LogoResolver } from './shared/types';

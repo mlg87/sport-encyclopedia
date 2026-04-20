@@ -20,11 +20,12 @@
 // and 1904 titles were earned under the club's earlier name "The
 // Wednesday"; both roll up via the `sheff_wed` id.
 //
-// espnAbbr is null for every row: EPL doesn't have a public logo CDN
-// we can reliably hit, so TeamLogo falls straight through to the text
-// badge tier. Leeds uses the away-kit navy (#1D428A) rather than pure
-// white so the text-badge luma heuristic reads correctly on a white
-// background.
+// espnAbbr stays null on every row: EPL logos resolve via franchiseId
+// through a map in config.ts (ESPN's soccer CDN keys on numeric team
+// ids, and the id is stable per franchise since English clubs don't
+// relocate). Leeds uses the away-kit navy (#1D428A) rather than pure
+// white so when the ESPN logo fails to load the text-badge luma
+// heuristic reads correctly on a white background.
 
 import type { Row } from '../../shared/types';
 

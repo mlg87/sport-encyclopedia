@@ -164,11 +164,24 @@ passes the resulting list down to `TeamLogo`.
 - **MLB:** `[espnPng, textBadge]`, same pattern — historical names
   route through the modern franchise's ESPN slug (`oak` for Philadelphia
   Athletics, `atl` for Boston Braves, `lad` for Brooklyn Dodgers).
-- **F1 Drivers / Constructors / EPL:** `[]` — no public logo CDN worth
-  wiring up for these. The resolver returns empty, and every row
-  renders as a color-filled text badge. This is fine: the color accent
-  still conveys team/constructor identity, and the name/abbr are
-  inline.
+- **EPL:** `[espnSoccerPng, textBadge]` — ESPN's soccer CDN keys on
+  numeric team ids (`/soccer/500/<id>.png`). Every club that ever won
+  the English top flight still has an ESPN record, so `eplConfig`
+  carries a `franchiseId → ESPN numeric id` map and the resolver
+  builds the URL from that. The ids live in the config (not on every
+  data row) because EPL franchiseIds never relocate — one id per
+  franchise is enough.
+- **F1 Constructors:** `[formulaOneCdnPng, textBadge]` for the five
+  constructors still on the grid (ferrari, mclaren, mercedes,
+  red_bull, williams); `[]` for defunct / one-off champions (vanwall,
+  cooper, brm, lotus, brabham, matra, tyrrell, benetton, renault,
+  brawn). The config maps franchiseId → F1 CDN slug, and the
+  resolver hits `media.formula1.com/.../teams/2025/<slug>-logo.png`.
+  Defunct teams land on the color-filled text badge; the name/abbr
+  carry the rest.
+- **F1 Drivers:** `[]` — no public logo CDN worth wiring up. Every
+  row renders as a color-filled text badge keyed by the driver's
+  team color. The subtitle carries the constructor inline.
 
 Pre-1915 NHL teams have no `espnAbbr`, so their chain is just
 `[nhlSvg_dark, textBadge]` — and since the NHL CDN doesn't have those
